@@ -9,6 +9,26 @@ const serverFiles = [
   "plugins/drawio-scientific-illustrator/scripts/server.mjs",
 ];
 
+// Keep the biological preset expressible through the existing live API.
+// This checks the advertised contract, not rendering quality or scientific meaning.
+function checkPresetCapabilities(tools) {
+  const required = {
+    drawio_live_add_shape: { id: "string", shape: "string", style: "string", font_size: "number", stroke_width: "number" },
+    drawio_live_add_edge: { source: "string", target: "string", style: "string", width: "number", color: "string", dashed: "boolean", start_arrow: "string", end_arrow: "string", entry_x: "number", entry_y: "number", exit_x: "number", exit_y: "number", waypoints: "array" },
+    drawio_live_update_cell: { id: "string", label: "string", style: "string", x: "number", y: "number", width: "number", height: "number" },
+  };
+  for (const [name, fields] of Object.entries(required)) {
+    const properties = tools.find((tool) => tool.name === name)?.inputSchema?.properties;
+    for (const [field, type] of Object.entries(fields)) {
+      if (properties?.[field]?.type !== type) throw new Error(`Preset requires ${name}.${field} (${type}).`);
+    }
+  }
+  const shapes = tools.find((tool) => tool.name === "drawio_live_add_shape").inputSchema.properties.shape.enum;
+  for (const shape of ["ellipse", "rounded", "text"]) {
+    if (!shapes?.includes(shape)) throw new Error(`Preset requires editable ${shape} shapes.`);
+  }
+}
+
 async function testServer(relativeFile) {
   const child = spawn(process.execPath, [path.join(root, relativeFile)], { stdio: ["pipe", "pipe", "pipe"] });
   const lines = createInterface({ input: child.stdout });
@@ -45,6 +65,7 @@ async function testServer(relativeFile) {
     if (responses.get(1)?.error) throw new Error(JSON.stringify(responses.get(1).error));
     const tools = responses.get(2)?.result?.tools;
     if (!Array.isArray(tools) || tools.length === 0) throw new Error(`${relativeFile} returned no tools.`);
+    if (relativeFile.endsWith("/live-server.mjs")) checkPresetCapabilities(tools);
     console.log(`${relativeFile}: ${tools.length} tools`);
   } finally {
     lines.close();
