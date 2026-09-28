@@ -77,7 +77,7 @@ codex plugin add drawio-scientific-illustrator@drawio-scientific-tools
 ### How to use it
 
 1. Restart Codex after installation and create a new task.
-2. Attach a PNG, JPEG, SVG, or a rendered PDF page as the reference.
+2. Attach a PNG, JPEG, SVG, or a rendered PDF page as the reference, or provide a scientific brief for a biological mechanism diagram.
 3. Mention **Draw.io Scientific Illustrator** or select the plugin in the composer.
 4. State the desired pacing and output formats.
 
@@ -100,6 +100,33 @@ Chinese prompts work equally well:
 这张参考图。必须直接控制 draw.io 画布，不要使用系统鼠标键盘控制，也不要先生成
 XML。文字、箭头、分区和图例都要可编辑；完成后保存 .drawio 并导出 2000 px PNG。
 ```
+
+### Preset: Nature-style biological mechanism
+
+For biological mechanism briefs, the [skill](plugins/drawio-scientific-illustrator/skills/recreate-scientific-figure-in-drawio/SKILL.md#preset-nature-style-biological-mechanism) supplies a small preset using the existing live tools. "Nature-style" means restrained scientific illustration, not an official journal template. It is selected for mechanism briefs without another specified style, or when explicitly requested. Exact reference reconstruction keeps the reference's style and labels unless restyling is requested; other figure types keep the general workflow.
+
+| Recurring requirement | Preset behavior |
+| --- | --- |
+| Consistent numbering and story | Main modules use **1 / 2 / 3**, never A/B/C; follow **biological objects → state changes → information flow** without inventing biological steps. |
+| Readable to non-specialists | Recognizable biological objects, visible state changes, short titles/labels, concrete verbs, and definitions for necessary abbreviations. |
+| Consistent appearance | White background, muted semantic colors, three text levels, 1.5 px object outlines / 2 px connectors, modest rounded containers, and explicit margins/padding. |
+| Scientifically meaningful arrows | Distinguish directed flow, inhibition, association and labeled hypotheses; preserve supplied evidence and measured/predicted distinctions. |
+| Editable results | Build objects, labels, state cues, arrows and legends as separate graph cells; review screenshots, refine live, and save `.drawio` plus exports. No new MCP endpoint or `preset` parameter is required. |
+
+Example prompt:
+
+```text
+Use $recreate-scientific-figure-in-drawio with the Nature-style biological mechanism
+preset. From the mechanism brief below, show biological objects → state changes →
+information flow with 1/2/3 module numbers and concise labels for non-specialists.
+Keep all elements editable, inspect each section, and export .drawio plus a 2000 px PNG.
+Mechanism brief: [objects, compartments, before/after states, supported relationships,
+and any uncertain steps or measured/predicted time points].
+```
+
+A complete brief is enough for a generic mechanism sketch. **Provide a reference** to reproduce a specific paper, an earlier figure's exact layout/palette/icons, detailed anatomy or subcellular spatial arrangements, or specialist pathway notation. Provide source images/data for microscopy, histology, 3D molecular renderings, heatmaps or quantitative plots; the preset cannot turn these into fully editable primitives and the live image-insertion limitation still applies. It does not supply missing scientific facts or guarantee visual fidelity without review.
+
+This preset is maintained in the **Shuai1Wen fork**. To install this fork, follow the manual installation steps with `https://github.com/Shuai1Wen/drawio-scientific-illustrator.git` as the clone URL. The bundled one-command installers above currently target the upstream repository.
 
 ### Live tool workflow
 
@@ -232,7 +259,7 @@ codex plugin add drawio-scientific-illustrator@drawio-scientific-tools
 ### 使用方法
 
 1. 重启 Codex 并新建任务；
-2. 上传 PNG、JPEG、SVG，或者从 PDF 渲染出的参考页；
+2. 上传 PNG、JPEG、SVG 或从 PDF 渲染出的参考页；生物机制图也可提供完整的机制文字说明；
 3. 在输入框选择或提到 **Draw.io Scientific Illustrator**；
 4. 说明绘制步进间隔、画面尺寸和希望导出的格式。
 
@@ -246,6 +273,32 @@ codex plugin add drawio-scientific-illustrator@drawio-scientific-tools
 生成 XML。所有文字、箭头、分区、图例都要保持可编辑。每完成一个逻辑区域就检查并
 修正，最后保存 .drawio，并导出宽度为 2000 px 的 PNG 预览图。
 ```
+
+### 预设：Nature-style biological mechanism
+
+[Skill](plugins/drawio-scientific-illustrator/skills/recreate-scientific-figure-in-drawio/SKILL.md#preset-nature-style-biological-mechanism) 新增一个基于现有实时工具的最小生物机制图预设。“Nature-style”表示简洁、克制的科研插图风格，并非期刊官方模板。根据文字说明绘制机制图且未指定其他风格时默认启用，也可点名调用。精确复刻参考图时保留原图的样式和编号，除非明确要求应用预设或重新设计；其他科研图继续使用通用流程。
+
+| 反复提出的需求 | 预设中的规则 |
+| --- | --- |
+| 编号与逻辑一致 | 主模块固定采用 **1 / 2 / 3**，不用 A/B/C；围绕**生物对象 → 状态变化 → 信息流**组织，不凭空增加生物步骤。 |
+| 非专家也能快速读懂 | 用可识别的生物对象和可见的前后状态表达机制，缩短标题和标签，使用具体动词，解释必要缩写。 |
+| 视觉统一 | 白底、低饱和语义配色、三级文字层级、1.5 px 对象轮廓 / 2 px 连线、统一适度圆角，以及明确的留白和内边距。 |
+| 箭头含义准确 | 区分定向传递、抑制、关联及明确标注的推测；保留证据强度、实测与预测的区别。 |
+| 所有示意元素可编辑 | 对象、状态标记、文字、箭头和图例均用独立图元绘制，截图检查后直接在画布修改，保存 `.drawio` 并导出；无需新增 MCP 接口或 `preset` 参数。 |
+
+可直接使用：
+
+```text
+使用 $recreate-scientific-figure-in-drawio，应用 Nature-style biological mechanism
+预设。根据下面的机制说明，按“生物对象 → 状态变化 → 信息流”组织画面，主模块用
+1/2/3 编号，文字精简，让非专家也能看懂。所有元素保持可编辑，每完成一个区域就
+截图复核，最后保存 .drawio 并导出 2000 px PNG。
+机制说明：[对象、所在区室、变化前后状态、有依据的关系，以及不确定步骤或实测/预测时间点]。
+```
+
+一般机制示意图有完整文字说明即可。**以下情形仍需提供参考图**：精确复刻某篇论文或某张旧图的布局、配色、图标轮廓；还原详细解剖或亚细胞空间关系；使用特殊通路符号。显微/组织图像、三维分子渲染、热图和定量数据图还需要相应原图或数据；预设不能将这些素材自动变为完全可编辑图元，现有实时图片插入限制仍然适用。预设不补造科学事实，也不能代替视觉复核。
+
+此预设位于 **Shuai1Wen 分支仓库**。安装此仓库时，按手动安装步骤操作，将克隆地址换为 `https://github.com/Shuai1Wen/drawio-scientific-illustrator.git`。上文的一键安装脚本目前仍指向上游仓库。
 
 ### 工作过程
 

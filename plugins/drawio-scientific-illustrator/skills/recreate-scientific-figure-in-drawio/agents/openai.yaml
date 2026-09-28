@@ -1,4 +1,4 @@
 interface:
   display_name: "Draw.io Scientific Figure"
   short_description: "Recreate static scientific figures as editable draw.io diagrams"
-  default_prompt: "Recreate this reference figure as an editable draw.io diagram, export a preview, and refine it."
+  default_prompt: "Use $recreate-scientific-figure-in-drawio to draw an editable figure live in draw.io; for a biological mechanism brief, apply the Nature-style biological mechanism preset with 1/2/3 numbering and biological objects → state changes → information flow; preserve exact references unless I request restyling, then export and refine a preview."
